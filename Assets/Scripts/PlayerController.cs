@@ -13,11 +13,12 @@ public class PlayerController : MonoBehaviour
     private float _horizontal;
     private float _vertical;
     private float _turnSmoothVelocity;
+    [SerializeField] private float _JumpHeight = 2;
     
 
     //---------------Movement--------------------//
     [SerializeField] private float _speed = 5f;
-    [SerializeField] private float _turnSmoothTime = 0.5f;
+    [SerializeField] private float _turnSmoothTime = 0.05f;
 
     //---------------Graveded--------------------//
     [SerializeField] private float _gravity = -9.81f;
@@ -48,7 +49,22 @@ public class PlayerController : MonoBehaviour
         _horizontal = Input.GetAxis("Horizontal");
         _vertical = Input.GetAxis("Vertical");
         
-        Movimiento();
+     
+        if (Input.GetButton("Fire2"))
+        {
+            AimMovimiento();
+        }
+        else 
+        {
+            Movimiento(); 
+        }
+
+
+        if(Input.GetButtonDown("Jump") && IsGrounded())
+        {
+            Jump();
+        }
+
         Gravity();
         
         
@@ -71,6 +87,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    
+    void AimMovimiento()
+    {
+        Vector3 direction= new Vector3(_horizontal, 0, _vertical);
+
+        float targeAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + _camara.eulerAngles.y;
+        float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, _camara.eulerAngles.y, ref _turnSmoothVelocity, _turnSmoothTime);
+       
+        transform.rotation = Quaternion.Euler(0, smoothAngle, 0); 
+
+        if(direction != Vector3.zero)
+        {
+            Vector3 moveDirection = Quaternion.Euler(0, targeAngle, 0) * Vector3.forward;
+            
+            _controller.Move(moveDirection * _speed * Time.deltaTime);
+        }
+        
+        
+    }
+
     void Gravity()
     {
         if(!IsGrounded())
@@ -83,6 +119,11 @@ public class PlayerController : MonoBehaviour
         }
 
         _controller.Move(_playerGravity * Time.deltaTime);
+    }
+
+    void Jump()
+    {
+        _playerGravity.y = Mathf.Sqrt(_JumpHeight * -2 * _gravity);
     }
 
     bool IsGrounded()
