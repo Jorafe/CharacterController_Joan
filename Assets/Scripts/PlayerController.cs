@@ -12,10 +12,11 @@ public class PlayerController : MonoBehaviour
     //---------------Input-----------------------//
     private float _horizontal;
     private float _vertical;
-    private float _turnSmoothVelocity;
+    private float _turnSmoothVelocity; 
+    
+    [SerializeField] private float _speed = 5f;
     [SerializeField] private float _JumpHeight = 2;
     [SerializeField] private float _pushForce = 10;
-    [SerializeField] private float _speed = 5f;
     [SerializeField] private float _turnSmoothTime = 0.05f;
 
     //---------------Graveded--------------------//
@@ -130,13 +131,13 @@ public class PlayerController : MonoBehaviour
         _playerGravity.y = Mathf.Sqrt(_JumpHeight * -2 * _gravity);
     }
 
-    /*bool IsGrounded()
+    bool IsGrounded()
     {
         return Physics.CheckSphere(_sensorPosition.position, _sensorRadius, _groundLayer);
 
-    }*/
+    }
 
-    bool IsGrounded()
+    /*bool IsGrounded()
     {
         RaycastHit hit;
         if(Physics.Raycast(_sensorPosition.position, -transform.up, out hit, 2))
@@ -157,7 +158,7 @@ public class PlayerController : MonoBehaviour
             return false;
         }
         
-    }
+    }*/
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
