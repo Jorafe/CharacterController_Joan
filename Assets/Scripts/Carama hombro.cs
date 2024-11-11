@@ -12,6 +12,11 @@ public class Caramahombro : MonoBehaviour
 
     private Transform _lookAtTarget;
 
+    //---------------CamerasChange----------------//
+
+    [SerializeField] private GameObject _normalCamera;
+    [SerializeField] private GameObject _AimCamera;
+
     //---------------Input-----------------------//
     private float _horizontal;
     private float _vertical;
@@ -45,7 +50,7 @@ public class Caramahombro : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
@@ -53,6 +58,17 @@ public class Caramahombro : MonoBehaviour
     {
          _horizontal = Input.GetAxis("Horizontal");
         _vertical = Input.GetAxis("Vertical");
+
+        if(Input.GetButton("Fire2"))
+        {
+            _normalCamera.SetActive(false);
+            _AimCamera.SetActive(true);
+        }
+        else
+        {
+            _normalCamera.SetActive(true);
+            _AimCamera.SetActive(false);
+        }
         
         if(Input.GetButtonDown("Jump") && IsGrounded())
         {
