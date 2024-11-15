@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     //---------------Components------------------//
     private CharacterController _controller;
     private Transform _camara;
+    public Animator _anim;
 
     //---------------Input-----------------------//
     private float _horizontal;
@@ -35,12 +36,13 @@ public class PlayerController : MonoBehaviour
     {
         _controller = GetComponent<CharacterController>();
         _camara = Camera.main.transform;
+        _anim = GetComponentInChildren<Animator>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+         Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
@@ -63,7 +65,10 @@ public class PlayerController : MonoBehaviour
         if(Input.GetButtonDown("Jump") && IsGrounded())
         {
             Jump();
+            
         }
+       
+       
 
         Gravity();
 
@@ -78,6 +83,10 @@ public class PlayerController : MonoBehaviour
     void Movimiento()
     {
         Vector3 direction= new Vector3(_horizontal, 0, _vertical);
+
+        _anim.SetFloat("VelZ",direction.magnitude);
+        _anim.SetFloat("VelX", 0);
+        
 
         if(direction != Vector3.zero)
         {
@@ -96,6 +105,8 @@ public class PlayerController : MonoBehaviour
     void AimMovimiento()
     {
         Vector3 direction= new Vector3(_horizontal, 0, _vertical);
+
+        
 
         float targeAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + _camara.eulerAngles.y;
         float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, _camara.eulerAngles.y, ref _turnSmoothVelocity, _turnSmoothTime);
@@ -121,6 +132,7 @@ public class PlayerController : MonoBehaviour
         else if(IsGrounded() && _playerGravity.y < 0)
         {
             _playerGravity.y = -1;
+            _anim.SetBool("IsJumping", false);
         }
 
         _controller.Move(_playerGravity * Time.deltaTime);
@@ -129,12 +141,13 @@ public class PlayerController : MonoBehaviour
     void Jump()
     {
         _playerGravity.y = Mathf.Sqrt(_JumpHeight * -2 * _gravity);
+        _anim.SetBool("IsJumping", true);
     }
 
     bool IsGrounded()
     {
         return Physics.CheckSphere(_sensorPosition.position, _sensorRadius, _groundLayer);
-
+        
     }
 
     /*bool IsGrounded()
