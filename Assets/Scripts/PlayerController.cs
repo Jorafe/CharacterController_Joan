@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     //---------------Components------------------//
     private CharacterController _controller;
     private Transform _camara;
-    public Animator _anim;
+    public Animator anim;
 
     //---------------Input-----------------------//
     private float _horizontal;
@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     
     [SerializeField] private float _speed = 5f;
     [SerializeField] private float _JumpHeight = 2;
-    [SerializeField] private float _pushForce = 10;
+    
     [SerializeField] private float _turnSmoothTime = 0.05f;
 
     //---------------Graveded--------------------//
@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
     {
         _controller = GetComponent<CharacterController>();
         _camara = Camera.main.transform;
-        _anim = GetComponentInChildren<Animator>();
+        anim = GetComponentInChildren<Animator>();
     }
 
     // Start is called before the first frame update
@@ -84,8 +84,8 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 direction= new Vector3(_horizontal, 0, _vertical);
 
-        _anim.SetFloat("VelZ",direction.magnitude);
-        _anim.SetFloat("VelX", 0);
+        anim.SetFloat("VelZ",direction.magnitude);
+        anim.SetFloat("VelX", 0);
         
 
         if(direction != Vector3.zero)
@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour
         else if(IsGrounded() && _playerGravity.y < 0)
         {
             _playerGravity.y = -1;
-            _anim.SetBool("IsJumping", false);
+            anim.SetBool("IsJumping", false);
         }
 
         _controller.Move(_playerGravity * Time.deltaTime);
@@ -141,7 +141,7 @@ public class PlayerController : MonoBehaviour
     void Jump()
     {
         _playerGravity.y = Mathf.Sqrt(_JumpHeight * -2 * _gravity);
-        _anim.SetBool("IsJumping", true);
+        anim.SetBool("IsJumping", true);
     }
 
     bool IsGrounded()
@@ -173,22 +173,7 @@ public class PlayerController : MonoBehaviour
         
     }*/
 
-    void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        if (hit.gameObject.tag == "Enemy")
-        {
-            
-        }
 
-        Rigidbody body = hit.collider.attachedRigidbody;
-
-        if (body != null)
-        {
-            Vector3 pushDirection = new Vector3(moveDirection.x, 0, moveDirection.z);
-
-            body.velocity = pushDirection * _pushForce / body.mass;
-        }
-    }
 
     void RayTest()
     {
@@ -214,23 +199,29 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireSphere(_sensorPosition.position, _sensorRadius);
     }
 
-    void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.tag == "Enemy")
-        {
-            _anim.SetTrigger("IsDead");
 
-            StartCoroutine(DelayedDestroy());
-        }
+    void OnTriggerEnter(Collider other)
+    {
+    
+    if (other.CompareTag("Enemy"))
+    {
+        
+        anim.SetTrigger("IsDead");
+
+        
+        StartCoroutine(DelayedDestroy());
     }
+    }
+
     IEnumerator DelayedDestroy()
     {
-        yield return new WaitForSeconds(4);
+    
+    yield return new WaitForSeconds(4); 
 
-
-            Destroy(gameObject);
-            
-        
+  
+    Destroy(gameObject);
     }
+
+    
     
 }
