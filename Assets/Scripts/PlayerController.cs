@@ -213,5 +213,24 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(_sensorPosition.position, _sensorRadius);
     }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            _anim.SetTrigger("IsDead");
+
+            StartCoroutine(DelayedDestroy());
+        }
+    }
+    IEnumerator DelayedDestroy()
+    {
+        yield return new WaitForSeconds(4);
+
+
+            Destroy(gameObject);
+            
+        
+    }
     
 }
